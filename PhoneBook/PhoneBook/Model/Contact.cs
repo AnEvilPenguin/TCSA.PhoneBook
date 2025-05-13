@@ -4,15 +4,22 @@ namespace PhoneBook.Model;
 
 public class Contact
 {
-    public int Id { get; set; }
     // MaxLength following NHS guidance for UI
     // https://www.datadictionary.nhs.uk/data_elements/person_full_name.html
-    [MaxLength(70)]
-    public required string Name { get; set; }
+    public const int MaxNameLength = 70;
     // Follows RFC 5321
-    [MaxLength(254)]
-    public string? Email { get; set; }
+    public const int MaxEmailLength = 254;
     // Winged it as people like whitespace
-    [MaxLength(20)]
+    public const int MaxPhoneLength = 20;
+    
+    public int Id { get; init; }
+
+    [MaxLength(MaxNameLength)]
+    public required string Name { get; set; }
+    
+    [MaxLength(MaxEmailLength)]
+    public string? Email { get; set; }
+    
+    [MaxLength(MaxPhoneLength)]
     public string? PhoneNumber { get; set; }
 }
