@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using PhoneBook.Controllers;
 using Spectre.Console;
 
 namespace PhoneBook.View;
@@ -7,18 +8,16 @@ enum MainMenuOption
 {
     [Display(Name = "Search Contacts")]
     Search,
-    [Display(Name = "Add New Contact")]
+    [Display(Name = "New Contact")]
     Add,
-    [Display(Name = "Edit Contact")]
-    Update,
-    [Display(Name = "Delete Contact")]
-    Delete,
     [Display(Name = "Quit")]
     Quit
 }
 
 public class MainMenu
 {
+    private readonly ContactController _contactController = new ContactController();
+    
     public int Run()
     {
         MainMenuOption? choice = null;
@@ -28,6 +27,17 @@ public class MainMenu
             AnsiConsole.Clear();
 
             choice = Prompt();
+
+            switch (choice)
+            {
+                case MainMenuOption.Add:
+                    _contactController.Add();
+                    break;
+                
+                case MainMenuOption.Search:
+                    _contactController.Search();
+                    break;
+            }
         }
         
         return 0;
