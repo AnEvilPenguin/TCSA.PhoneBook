@@ -2,6 +2,7 @@ using PhoneBook.Model;
 using PhoneBook.Util;
 using Spectre.Console;
 using static PhoneBook.Model.Contact;
+using static PhoneBook.View.ContactView;
 
 namespace PhoneBook.Controllers;
 
@@ -33,44 +34,16 @@ public class ContactController
         
         using var db = new ContactContext();
         var entries = db.Contacts.AsQueryable();
+        
+        var queryBuilder = new QueryBuilder(entries);
+        
+        queryBuilder.NameQuery();
+        queryBuilder.EmailQuery();
+        queryBuilder.NumberQuery();
 
-        if (AnsiConsole.Confirm("Query by name?"))
-        {
-            var nameSearch = PromptForQueryString("Name");
-            entries = entries.Where(c => c.Name.ToLower().Contains(nameSearch));
-        }
-
-        if (AnsiConsole.Confirm("Query by email?"))
-        {
-            var emailSearch = PromptForQueryString("E-mail");
-            entries = entries.Where(c => !string.IsNullOrWhiteSpace(c.Email) 
-                                         && c.Email.ToLower().Contains(emailSearch));
-        }
-
-        if (AnsiConsole.Confirm("Query by number?"))
-        {
-            var phoneNumberSearch = PromptForQueryString("Phone");
-            entries = entries.Where(c => !string.IsNullOrWhiteSpace(c.PhoneNumber)  
-                                        && c.PhoneNumber.Contains(phoneNumberSearch));
-        }
+        entries = queryBuilder.GetQuery();
             
-        AnsiConsole.Clear();
-        
-        var table = new Table();
-        
-        table.AddColumn(new TableColumn("Name"));
-        table.AddColumn(new TableColumn("Email"));
-        table.AddColumn(new TableColumn("Phone"));
-
-        foreach (var entry in entries)
-        {
-            table.AddRow(entry.Name, entry.Email ?? string.Empty, entry.PhoneNumber ?? string.Empty);
-        }
-        
-        AnsiConsole.Write(table);
-        
-        AnsiConsole.MarkupLine("Press any key to continue...");
-        Console.ReadKey();
+        ContactTable(entries);
     }
     
     private static string PromptForString(string fieldName, Func<string, ValidationResult> validator, bool optional = false)
@@ -86,13 +59,5 @@ public class ContactController
             .Validate(validator);
         
         return AnsiConsole.Prompt(prompt);
-    }
-
-    private static string PromptForQueryString(string fieldName)
-    {
-        AnsiConsole.WriteLine();
-        AnsiConsole.Write(Helpers.GetStandardRule("Name"));
-
-        return AnsiConsole.Prompt(new TextPrompt<string>("Name [green]contains[/]:")).ToLower();
     }
 }
