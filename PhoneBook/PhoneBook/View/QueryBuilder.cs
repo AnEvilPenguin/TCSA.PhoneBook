@@ -5,34 +5,9 @@ using Spectre.Console;
 
 namespace PhoneBook.View;
 
-/*
-public enum QueryType
-{
-    Simple,
-    Complex
-}
-*/
 
 public static class QueryBuilder
 {
-    // I've run into some issues here. Mainly getting EF to build a query from my dynamic source.
-    // Reverting to keeping things simple and then maybe come back later
-    /*
-    public static IQueryable<Contact> Prompt(IQueryable<Contact> contacts)
-    {
-        AnsiConsole.Write(Helpers.GetStandardRule("Query Type"));
-        
-        var choice = AnsiConsole.Prompt(new SelectionPrompt<QueryType>()
-            .Title("What type of query would you like to run?")
-            .AddChoices(Enum.GetValues<QueryType>())
-            .UseConverter(Helpers.GetEnumDisplayValue));
-
-        return choice == QueryType.Simple
-            ? SimpleQuery(contacts)
-            : ComplexQuery(contacts);
-    }
-    */
-
     public static IQueryable<Contact> SimpleQuery(IQueryable<Contact> contacts)
     {
         AnsiConsole.Write(Helpers.GetStandardRule("Simple Query"));
@@ -60,11 +35,4 @@ public static class QueryBuilder
             _ => contacts.Where(c => c.Name.ToLower().Contains(queryString))
         };
     }
-
-    /*
-    private static IQueryable<Contact> ComplexQuery(IQueryable<Contact> contacts)
-    {
-        return contacts;
-    }
-    */
 }
