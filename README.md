@@ -7,22 +7,22 @@ TODO
 
 # Requirements
 
-- [ ] Records contacts and their phone numbers
-- [ ] Console based
+- [X] Records contacts and their phone numbers
+- [X] Console based
 - [ ] Should be CRUD
-- [ ] Need to use Entity Framework
-  - [ ] CANNOT use raw SQL
-- [ ] Should have a base contact class with the following minimum properties
-  - [ ] Id INT
-  - [ ] Name STRING
-  - [ ] Email STRING
-  - [ ] Phone Number STRING
-- [ ] Validation
-  - [ ] Email address
-  - [ ] Phone numbers
-- [ ] Code-first approach
-  - [ ] Let EF create the database schema
-- [ ] Use SQL Server
+- [X] Need to use Entity Framework
+  - [X] CANNOT use raw SQL
+- [X] Should have a base contact class with the following minimum properties
+  - [X] Id INT
+  - [X] Name STRING
+  - [X] Email STRING
+  - [X] Phone Number STRING
+- [X] Validation
+  - [X] Email address
+  - [X] Phone numbers
+- [X] Code-first approach
+  - [X] Let EF create the database schema
+- [X] Use SQL Server
 
 ## Stretch Goals
 
