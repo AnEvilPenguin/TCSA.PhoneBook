@@ -2,6 +2,7 @@
 using PhoneBook.Model;
 using PhoneBook.Util;
 using Spectre.Console;
+using static PhoneBook.View.ContactView;
 
 namespace PhoneBook.View;
 
@@ -11,15 +12,8 @@ public static class QueryBuilder
     public static IQueryable<Contact> SimpleQuery(IQueryable<Contact> contacts)
     {
         AnsiConsole.Write(Helpers.GetStandardRule("Simple Query"));
-        
-        var stringProperties = typeof(Contact)
-            .GetProperties()
-            .Where(x => x.PropertyType == typeof(string));
 
-        var property = AnsiConsole.Prompt(new SelectionPrompt<PropertyInfo>()
-            .Title("What property would you like to search against?")
-            .AddChoices(stringProperties)
-            .UseConverter(info => info.Name));
+        var property = PromptForProperty("What property would you like to search against?");
         
         AnsiConsole.Write(Helpers.GetStandardRule(property.Name));
         

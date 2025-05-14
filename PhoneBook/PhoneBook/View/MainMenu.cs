@@ -15,9 +15,16 @@ enum MainMenuOption
     Quit
 }
 
-public class MainMenu
+public class MainMenu : AbstractMenu
 {
-    private readonly ContactController _contactController = new ContactController();
+    private readonly ContactController _contactController;
+    private readonly SearchMenu _searchMenu;
+
+    public MainMenu()
+    {
+        _contactController = new ContactController();
+        _searchMenu = new SearchMenu(_contactController);
+    }
     
     public int Run()
     {
@@ -27,7 +34,7 @@ public class MainMenu
         {
             AnsiConsole.Clear();
 
-            choice = Prompt();
+            choice = Prompt<MainMenuOption>();
 
             switch (choice)
             {
@@ -36,17 +43,11 @@ public class MainMenu
                     break;
                 
                 case MainMenuOption.Search:
-                    _contactController.Search();
+                    _searchMenu.Run();
                     break;
             }
         }
         
         return 0;
     }
-
-    private MainMenuOption Prompt() => 
-        AnsiConsole.Prompt(new SelectionPrompt<MainMenuOption>()
-            .Title("What would you like to do?")
-            .AddChoices(Enum.GetValues<MainMenuOption>())
-            .UseConverter(Helpers.GetEnumDisplayValue));
 }

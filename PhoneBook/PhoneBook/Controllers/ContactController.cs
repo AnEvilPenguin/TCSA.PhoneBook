@@ -1,5 +1,4 @@
 using PhoneBook.Model;
-using PhoneBook.Util;
 using PhoneBook.View;
 using Spectre.Console;
 using static PhoneBook.Model.Contact;
@@ -29,30 +28,49 @@ public class ContactController
         db.SaveChanges();
     }
 
-    public void Search()
+    public void Delete(Contact contact)
+    {
+        using var db = new ContactContext();
+        db.Remove(contact);
+        db.SaveChanges();
+    }
+
+    public List<Contact> Search()
     {
         AnsiConsole.Clear();
         
         using var db = new ContactContext();
         var entries = db.Contacts.AsQueryable();
         
-        entries = QueryBuilder.SimpleQuery(entries);
-            
-        ContactTable(entries);
+        entries = QueryBuilder.SimpleQuery(entries)
+            .OrderBy(c => c.Name);
+        
+        return entries.ToList();
     }
-    
-    private static string PromptForString(string fieldName, Func<string, ValidationResult> validator, bool optional = false)
+
+    public Contact Update(Contact contact)
     {
-        AnsiConsole.Write(Helpers.GetStandardRule(fieldName));
+        var property = PromptForProperty("What property do you want to update?");
+
+        switch (property.Name)
+        {
+            case "Name":
+                contact.Name = PromptForString("Name", ValidateName);
+                break;
+            
+            case "Email":
+                contact.Email = PromptForString("E-mail address", ValidateEmail, true);
+                break;
+            
+            case "PhoneNumber":
+                contact.PhoneNumber = PromptForString("Phone number", ValidatePhoneNumber, true);
+                break;
+        }
         
-        var prefix = optional ? "[[Optional]] " : "";
+        using var db = new ContactContext();
+        db.Update(contact);
+        db.SaveChanges();
         
-        var prompt = new TextPrompt<string>($"{prefix}What [green]{fieldName.ToLower()}[/] would you like to use?")
-            {
-                AllowEmpty = optional
-            }
-            .Validate(validator);
-        
-        return AnsiConsole.Prompt(prompt);
+        return contact;
     }
 }

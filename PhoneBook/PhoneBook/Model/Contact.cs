@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text;
 using ValidationResult = Spectre.Console.ValidationResult;
 using PhoneNumbers;
 
@@ -87,5 +88,18 @@ public class Contact
         return phoneNumberUtil.IsValidNumber(parsed) 
             ? ValidationResult.Success() 
             : ValidationResult.Error($"[red]Invalid number[/]");
+    }
+
+    public override string ToString()
+    {
+        var output = new StringBuilder(Name);
+        
+        if (!string.IsNullOrWhiteSpace(Email))
+            output.Append($" e: {Email}");
+        
+        if (!string.IsNullOrWhiteSpace(PhoneNumber))
+            output.Append($" p: {PhoneNumber}");
+        
+        return output.ToString();
     }
 }
