@@ -1,5 +1,6 @@
 using PhoneBook.Model;
 using PhoneBook.Util;
+using PhoneBook.View;
 using Spectre.Console;
 using static PhoneBook.Model.Contact;
 using static PhoneBook.View.ContactView;
@@ -35,13 +36,7 @@ public class ContactController
         using var db = new ContactContext();
         var entries = db.Contacts.AsQueryable();
         
-        var queryBuilder = new QueryBuilder(entries);
-        
-        queryBuilder.NameQuery();
-        queryBuilder.EmailQuery();
-        queryBuilder.NumberQuery();
-
-        entries = queryBuilder.GetQuery();
+        entries = QueryBuilder.SimpleQuery(entries);
             
         ContactTable(entries);
     }
