@@ -10,7 +10,7 @@ public class Category
     public int Id { get; init; }
     
     [MaxLength(MaxNameLength)]
-    public required string Name { get; init; }
+    public required string Name { get; set; }
     
     public ICollection<Contact> Contacts { get; set; } = new List<Contact>();
 

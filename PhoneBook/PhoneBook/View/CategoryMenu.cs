@@ -9,6 +9,8 @@ enum CategoryOption
 {
     [Display(Name = "New Category")]
     New,
+    [Display(Name = "Rename Category")]
+    Update,
     [Display(Name = "Delete Category")]
     Delete,
     [Display(Name = "Back to Main Menu")]
@@ -27,6 +29,8 @@ public class CategoryMenu () : AbstractMenu
         {
             
             choice = Prompt<CategoryOption>();
+
+            Category? category = null;
             
             switch (choice)
             {
@@ -34,8 +38,17 @@ public class CategoryMenu () : AbstractMenu
                     _categoryController.Add();
                     break;
                 
+                case CategoryOption.Update:
+                    category = GetCategory();
+                    
+                    if (category != null)
+                        _categoryController.Update(category);
+                    
+                    AnsiConsole.Clear();
+                    break;
+                
                 case CategoryOption.Delete:
-                    var category = GetCategory();
+                    category = GetCategory();
                     
                     if (category != null)
                         _categoryController.Delete(category);

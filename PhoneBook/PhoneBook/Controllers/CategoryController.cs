@@ -64,4 +64,17 @@ public class CategoryController
         
         return categories.ToList();
     }
+
+    public void Update(Category category)
+    {
+        AnsiConsole.Clear();
+
+        var name = PromptForString("Name", ValidateName);
+        
+        category.Name = name;
+        
+        using var db = new ContactContext();
+        db.Update(category);
+        db.SaveChanges();
+    }
 }
