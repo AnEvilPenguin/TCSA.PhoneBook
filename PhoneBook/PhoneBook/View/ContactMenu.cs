@@ -40,5 +40,7 @@ public class ContactMenu (ContactController contactController) : AbstractMenu
                     return;
             }
         }
+        
+        AnsiConsole.Clear();
     }
 }
