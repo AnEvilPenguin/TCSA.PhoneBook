@@ -4,11 +4,14 @@ using PhoneBook.View;
 using Spectre.Console;
 using static PhoneBook.Model.Contact;
 using static PhoneBook.View.ContactView;
+using static PhoneBook.Util.Helpers;
 
 namespace PhoneBook.Controllers;
 
 public class ContactController
 {
+    private CategoryController _categoryController = new ();
+    
     public void Add()
     {
         AnsiConsole.Clear();
@@ -19,12 +22,23 @@ public class ContactController
         
         var phone = PromptForString("Phone number", ValidatePhoneNumber, true);
         
+        var categories = _categoryController.List();
+        
+        Category? category = null;
+
+        if (categories.Any() && AnsiConsole.Confirm("Add category?"))
+            category = AnsiConsole.Prompt(new SelectionPrompt<Category>()
+                .Title("What category would you like to add?")
+                .AddChoices(categories)
+                .UseConverter(c => c.Name));
+        
         using var db = new ContactContext();
         db.Add(new Contact
         {
             Name = name,
             Email = email,
-            PhoneNumber = phone
+            PhoneNumber = phone,
+            CategoryId = category?.Id
         });
         db.SaveChanges();
     }
@@ -49,20 +63,24 @@ public class ContactController
     {
         AnsiConsole.Clear();
         
+        var categories = _categoryController.List();
+        
         using var db = new ContactContext();
         var entries = db.Contacts.AsQueryable();
         
-        entries = QueryBuilder.SimpleQuery(entries)
+        entries = QueryBuilder.SimpleQuery(entries, categories)
             .OrderBy(c => c.Name);
         
-        return entries.ToList();
+        return entries.Include(c => c.Category).ToList();
     }
 
     public Contact Update(Contact contact)
     {
-        var property = PromptForProperty("What property do you want to update?");
+        var categories = _categoryController.List();
+        
+        var property = PromptForProperty("What property do you want to update?", categories.Any());
 
-        switch (property.Name)
+        switch (property)
         {
             case "Name":
                 contact.Name = PromptForString("Name", ValidateName);
@@ -74,6 +92,15 @@ public class ContactController
             
             case "PhoneNumber":
                 contact.PhoneNumber = PromptForString("Phone number", ValidatePhoneNumber, true);
+                break;
+            
+            case "Category":
+                var category = AnsiConsole.Prompt(new SelectionPrompt<Category>()
+                    .Title("What category would you like to use?")
+                    .AddChoices(categories)
+                    .UseConverter(c => c.Name));
+                contact.Category = category;
+                contact.CategoryId = category.Id;
                 break;
         }
         

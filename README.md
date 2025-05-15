@@ -27,7 +27,7 @@ TODO
 ## Stretch Goals
 
 - [ ] Functionality that allows sending e-mail from the app
-- [ ] Categories of contacts (Family, Friends, Work, etc.)
+- [X] Categories of contacts (Family, Friends, Work, etc.)
 - [ ] Send SMS
 
 # Features

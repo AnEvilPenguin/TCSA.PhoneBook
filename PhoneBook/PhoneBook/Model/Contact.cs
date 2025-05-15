@@ -25,6 +25,9 @@ public class Contact
     
     [MaxLength(MaxPhoneLength)]
     public string? PhoneNumber { get; set; }
+    
+    public int? CategoryId { get; set; }
+    public Category? Category { get; set; }
 
     public static ValidationResult ValidateName(string name)
     {
@@ -99,6 +102,9 @@ public class Contact
         
         if (!string.IsNullOrWhiteSpace(PhoneNumber))
             output.Append($" p: {PhoneNumber}");
+        
+        if  (Category != null)
+            output.Append($" c: {Category.Name}");
         
         return output.ToString();
     }

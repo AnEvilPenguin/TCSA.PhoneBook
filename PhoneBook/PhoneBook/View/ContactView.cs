@@ -7,53 +7,47 @@ namespace PhoneBook.View;
 
 public static class ContactView
 {
+    private const int TableLimit = 8;
+    
     public static void ContactTable(List<Contact> contacts)
     {
         AnsiConsole.Clear();
-        
+
         var table = new Table();
-        
+
         table.AddColumn(new TableColumn("Name"));
         table.AddColumn(new TableColumn("Email"));
         table.AddColumn(new TableColumn("Phone"));
-        
-        var sampleSize = Math.Min(contacts.Count, 8);
+        table.AddColumn(new TableColumn("Category"));
+
+        var sampleSize = Math.Min(contacts.Count, TableLimit);
 
         foreach (var entry in contacts.GetRange(0, sampleSize))
         {
-            table.AddRow(entry.Name, entry.Email ?? string.Empty, entry.PhoneNumber ?? string.Empty);
+            table.AddRow(entry.Name, 
+                entry.Email ?? string.Empty, 
+                entry.PhoneNumber ?? string.Empty,
+                entry.Category?.Name ?? string.Empty);
         }
-        
+
         AnsiConsole.Write(table);
-        
-        if (contacts.Count > 10)
-            AnsiConsole.MarkupLine($"Omitted [yellow]{contacts.Count - 10}[/] contacts from the table...");
+
+        if (contacts.Count > TableLimit)
+            AnsiConsole.MarkupLine($"Omitted [yellow]{contacts.Count - TableLimit}[/] contacts from the table...");
     }
 
-    public static PropertyInfo PromptForProperty(string prompt)
+    public static string PromptForProperty(string prompt, bool includeCategory = false)
     {
         var stringProperties = typeof(Contact)
             .GetProperties()
-            .Where(x => x.PropertyType == typeof(string));
+            .Where(x => x.PropertyType == typeof(string))
+            .Select(x => x.Name);
         
-        return AnsiConsole.Prompt(new SelectionPrompt<PropertyInfo>()
+        if (includeCategory)
+            stringProperties = stringProperties.Append("Category");
+
+        return AnsiConsole.Prompt<string>(new SelectionPrompt<string>()
             .Title("What property would you like to search against?")
-            .AddChoices(stringProperties)
-            .UseConverter(info => info.Name));
-    }
-    
-    public static string PromptForString(string fieldName, Func<string, ValidationResult> validator, bool optional = false)
-    {
-        AnsiConsole.Write(Helpers.GetStandardRule(fieldName));
-        
-        var prefix = optional ? "[[Optional]] " : "";
-        
-        var prompt = new TextPrompt<string>($"{prefix}What [green]{fieldName.ToLower()}[/] would you like to use?")
-            {
-                AllowEmpty = optional
-            }
-            .Validate(validator);
-        
-        return AnsiConsole.Prompt(prompt);
+            .AddChoices(stringProperties));
     }
 }

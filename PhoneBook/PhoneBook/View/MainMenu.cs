@@ -11,6 +11,8 @@ enum MainMenuOption
     Search,
     [Display(Name = "New Contact")]
     Add,
+    [Display(Name = "Manage Categories")]
+    Categories,
     [Display(Name = "Quit")]
     Quit
 }
@@ -19,11 +21,13 @@ public class MainMenu : AbstractMenu
 {
     private readonly ContactController _contactController;
     private readonly SearchMenu _searchMenu;
+    private readonly CategoryMenu _categoryMenu;
 
     public MainMenu()
     {
         _contactController = new ContactController();
         _searchMenu = new SearchMenu(_contactController);
+        _categoryMenu = new CategoryMenu();
     }
     
     public int Run()
@@ -44,6 +48,10 @@ public class MainMenu : AbstractMenu
                 
                 case MainMenuOption.Search:
                     _searchMenu.Run();
+                    break;
+                
+                case MainMenuOption.Categories:
+                    _categoryMenu.Run();
                     break;
             }
         }

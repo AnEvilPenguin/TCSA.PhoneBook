@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Spectre.Console;
+using ValidationResult = Spectre.Console.ValidationResult;
 
 namespace PhoneBook.Util;
 
@@ -22,4 +23,19 @@ public static class Helpers
             Title = $"[darkgoldenrod]{title}[/]",
             Justification = Justify.Left
         };
+    
+    public static string PromptForString(string fieldName, Func<string, ValidationResult> validator, bool optional = false)
+    {
+        AnsiConsole.Write(Helpers.GetStandardRule(fieldName));
+        
+        var prefix = optional ? "[[Optional]] " : "";
+        
+        var prompt = new TextPrompt<string>($"{prefix}What [green]{fieldName.ToLower()}[/] would you like to use?")
+            {
+                AllowEmpty = optional
+            }
+            .Validate(validator);
+        
+        return AnsiConsole.Prompt(prompt);
+    }
 }
