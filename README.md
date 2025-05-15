@@ -1,9 +1,80 @@
-# TCSA-Template
-A template repo for The C Sharp Academy work
+# Phone Book
+
+This is a project primarily based around starting to learn Entity Framework.  
+This is a very simple 'phone book'. For those of you not old enough to know what this is, once upon a time every family
+had a communal telephone that could be used to call other families. But, usually, most of the people you called were not 
+important enough to you to actually bother memorizing their telephone number, so you would have a little notebook beside 
+the phone (or in a drawer if you were fancy) that you could use to write down names and numbers in a semi-legible 
+fashion.
 
 # How to use
 
-TODO
+To begin with you will need an instance of Microsoft SQL Server. There shouldn't be any requirement to use a specific 
+type or edition of SQL Server, however this was developed using the Linux docker image:
+
+``` bash
+docker pull mcr.microsoft.com/mssql/server
+docker run -e "ACCEPT_EULA=Y" -e "MSSQL_SA_PASSWORD=yourStrong(!)Password" -p 1433:1433 -d mcr.microsoft.com/mssql/server
+```
+
+Which will then run the container using the default port, the developer edition, and (at the time of writing) the 2022 
+version of the software.
+
+Then you will need to run the [setup.sql](/PhoneBook/setup.sql) script to prepare the database.
+
+Build the project however you normally would. E.g:
+
+```bash
+dotnet build ./PhoneBook/PhoneBook.sln
+```
+
+You will next need to update the appSettings.json file with your database connection string.  
+It should looks something like:
+
+```json
+{
+  "ConnectionSettings": {
+    "ConnectionString": "Server=localhost;Database=Contacts;User Id=myUser;Password=myPass;TrustServerCertificate=true;"
+  }
+}
+```
+
+If you would like to use the optional email sending functionality you will need to add SmtpSettings:
+
+```json
+{
+  "ConnectionSettings": {
+    "ConnectionString": "Server=localhost;Database=Contacts;User Id=myUser;Password=myPass;TrustServerCertificate=true;"
+  },
+  "SmtpSettings": {
+      "Uri": "smtps://smtp.gmail.com:465",
+      "Username": "feathers@gmail.com",
+      "Password": "superSecurePassword",
+      "SenderName": "Feathers McGraw",
+      "From": "feathers@gmail.com"
+    }
+}
+```
+If using Gmail, you may need to generate an app password. Otherwise check with your provider.
+
+When you run the executable you'll be presented with a the main menu:
+
+![Main menu](/Docs/Main_menu.png)
+
+Use the 'New Contact' menu to create a contact.  
+To work with existing contacts use the 'Search Contacts' menu.
+
+![Search menu](/Docs/Search.png)
+
+You will be able to Update or Delete the contact. If you have SMTP configured and the user has an email address, you
+will also be able to send a basic email to the user. If you have Twilio configured and the user has a phone number, you 
+will be able to send an SMS to the contact.
+
+To manage categories, use the 'Manage Categories' menu item.
+
+![Categories menu](/Docs/Categories.png)
+
+You'll be able to create, rename or delete any categories.
 
 # Requirements
 
@@ -26,26 +97,43 @@ TODO
 
 ## Stretch Goals
 
-- [ ] Functionality that allows sending e-mail from the app
+- [X] Functionality that allows sending e-mail from the app
 - [X] Categories of contacts (Family, Friends, Work, etc.)
 - [ ] Send SMS
 
 # Features
 
-TODO
+- Management of contacts
+- Categorization of contacts
+- Basic search functionality
+- Send email to contact
+- EF Core based app
+  - Pure code design
 
 # Challenges
 
-What went wrong, what things were difficult, how did you grow as a person?
+EF Core took a little bit of work to get my head around. The migrations path especially.  
+This was not helped by Rider not finding the `dotnet ef` for some reason (it had the path and command perfect, I just 
+had to copy the failed command to my terminal and run it there).  
+Twilio has a bunch of regulatory requirements in the UK, so it's taking a while to get a phone number allocated.  
+Generally though this has been smooth. I was expecting SMTP to give me more trouble than it did...
 
 # Lessons Learned
 
-- Learn some things and stuff
+- EF Core is pretty interesting
+  - Whether I prefer it to something lighter weight like Dapper, I'm not yet sure
+- Found lots of new libraries!
 
 # Areas to Improve
 
-- What things could you explore in a new project?
+- Spectre seemed quite limited for multi-line input.
+  - I think I'd like to have a go at a proper text editor some day
+- Just need to use EF a lot more
 
 # Resources Used
 
-- A list of things
+- Microsoft Docs (lots of it)
+- MailKit
+- libphonenumber-csharp
+- Spectre.Console
+- A bit of StackOverflow
