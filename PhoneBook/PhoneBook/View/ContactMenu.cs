@@ -1,37 +1,62 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using PhoneBook.Controllers;
 using PhoneBook.Model;
+using PhoneBook.Util;
 using Spectre.Console;
 using static PhoneBook.View.ContactView;
 
 namespace PhoneBook.View;
 
-enum ContactOption
+public enum ContactOption
 {
-    [Display(Name = "Update Contact")]
     Update,
-    [Display(Name = "Delete Contact")]
     Delete,
-    [Display(Name = "Back to Search Menu")]
+    SMS,
     Back
+}
+
+public class ContactOperation
+{
+    public string Name { get; set; }
+    public ContactOption Option { get; set; }
 }
 
 public class ContactMenu (ContactController contactController) : AbstractMenu
 {
+    private readonly List<ContactOperation> _operations = [
+        new ContactOperation() { Name = "Update Contact", Option = ContactOption.Update, },
+        new ContactOperation() { Name = "Delete Contact", Option = ContactOption.Delete, },
+        new ContactOperation() { Name = "Back to Search Menu", Option = ContactOption.Back, }
+    ];
+    
+    private readonly SmsController _smsController = new();
+    
     public void Run(Contact contact)
     {
-        ContactOption? choice = null;
+        ContactOperation? choice = null;
         
-        while (choice != ContactOption.Back)
+        while (choice?.Option != ContactOption.Back)
         {
             ContactTable([contact]);
             
-            choice = Prompt<ContactOption>();
+            var options = new List<ContactOperation>(_operations);
             
-            switch (choice)
+            if (_smsController.CanSendSms && contact.PhoneNumber != null)
+                options.Insert(2, new ContactOperation() { Name = "Send SMS", Option = ContactOption.SMS, });
+            
+            choice = AnsiConsole.Prompt(new SelectionPrompt<ContactOperation>()
+                .Title("What would you like to do?")
+                .AddChoices(options)
+                .UseConverter(o => o.Name));
+            
+            switch (choice.Option)
             {
                 case ContactOption.Update:
                     contact = contactController.Update(contact);
+                    break;
+                
+                case ContactOption.SMS:
+                    
                     break;
                 
                 case ContactOption.Delete:
