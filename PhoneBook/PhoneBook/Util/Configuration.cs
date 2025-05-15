@@ -6,6 +6,7 @@ public static class Configuration
 {
     private static ConnectionSettings? _connectionSettings;
     private static TwilioSettings? _twilioSettings;
+    private static SmtpSettings? _smtpSettings;
     
     private static IConfigurationRoot _configuration = new ConfigurationBuilder()
         .AddJsonFile("appSettings.json")
@@ -29,5 +30,15 @@ public static class Configuration
         _twilioSettings = _configuration.GetSection("TwilioSettings").Get<TwilioSettings>();
         
         return _twilioSettings;
+    }
+    
+    public static SmtpSettings? GetSmtpSettings()
+    {
+        if (_smtpSettings != null)
+            return _smtpSettings;
+        
+        _smtpSettings = _configuration.GetSection("SmtpSettings").Get<SmtpSettings>();
+        
+        return _smtpSettings;
     }
 }

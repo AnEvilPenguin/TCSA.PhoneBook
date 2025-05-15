@@ -11,7 +11,8 @@ public enum ContactOption
 {
     Update,
     Delete,
-    SMS,
+    Sms,
+    Email,
     Back
 }
 
@@ -30,6 +31,7 @@ public class ContactMenu (ContactController contactController) : AbstractMenu
     ];
     
     private readonly SmsController _smsController = new();
+    private readonly SmtpController _smtpController = new();
     
     public void Run(Contact contact)
     {
@@ -42,7 +44,10 @@ public class ContactMenu (ContactController contactController) : AbstractMenu
             var options = new List<ContactOperation>(_operations);
             
             if (_smsController.CanSendSms && contact.PhoneNumber != null)
-                options.Insert(2, new ContactOperation() { Name = "Send SMS", Option = ContactOption.SMS, });
+                options.Insert(2, new ContactOperation() { Name = "Send SMS", Option = ContactOption.Sms, });
+            
+            if (_smtpController.CanSendEmail && contact.Email != null)
+                options.Insert(2, new ContactOperation() { Name = "Send Email", Option = ContactOption.Email, });
             
             choice = AnsiConsole.Prompt(new SelectionPrompt<ContactOperation>()
                 .Title("What would you like to do?")
@@ -55,7 +60,15 @@ public class ContactMenu (ContactController contactController) : AbstractMenu
                     contact = contactController.Update(contact);
                     break;
                 
-                case ContactOption.SMS:
+                case ContactOption.Sms:
+                    
+                    break;
+                
+                case ContactOption.Email:
+                    var message = EmailWriter.NewEmailMessage();
+                    
+                    if (message != null)
+                        _smtpController.SendEmail(contact, message);
                     
                     break;
                 
