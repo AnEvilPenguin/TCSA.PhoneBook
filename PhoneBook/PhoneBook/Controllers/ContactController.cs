@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using PhoneBook.Model;
 using PhoneBook.View;
 using Spectre.Console;
@@ -30,9 +31,18 @@ public class ContactController
 
     public void Delete(Contact contact)
     {
+        
         using var db = new ContactContext();
-        db.Remove(contact);
-        db.SaveChanges();
+        try
+        {
+            db.Remove(contact);
+            db.SaveChanges();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            AnsiConsole.Markup($"[red]{contact.Name}[/] has already been deleted");
+        }
+        
     }
 
     public List<Contact> Search()
