@@ -9,7 +9,7 @@ TODO
 
 - [X] Records contacts and their phone numbers
 - [X] Console based
-- [ ] Should be CRUD
+- [X] Should be CRUD
 - [X] Need to use Entity Framework
   - [X] CANNOT use raw SQL
 - [X] Should have a base contact class with the following minimum properties
