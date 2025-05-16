@@ -57,6 +57,22 @@ If you would like to use the optional email sending functionality you will need 
 ```
 If using Gmail, you may need to generate an app password. Otherwise check with your provider.
 
+To use Twilio fill in your AccountSid, Token, and phone number:
+
+```json
+{
+  "ConnectionSettings": {
+    "ConnectionString": "Server=localhost;Database=Contacts;User Id=sa;Password=Twstlb4e;TrustServerCertificate=true;"
+  },
+  "TwilioSettings": {
+    "Sid": "ABC12345...",
+    "Token": "a1b23c...",
+    "Number": "+4477123456"
+  }
+}
+
+```
+
 When you run the executable you'll be presented with a the main menu:
 
 ![Main menu](/Docs/Main_menu.png)

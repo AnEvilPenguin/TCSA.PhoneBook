@@ -2,7 +2,7 @@ namespace PhoneBook.Util;
 
 public class TwilioSettings
 {
-    public required string TwilioSid { get; init; }
-    public required string TwilioToken { get; init; }
-    public required string TwilioNumber { get; init; }
+    public required string Sid { get; init; }
+    public required string Token { get; init; }
+    public required string Number { get; init; }
 }

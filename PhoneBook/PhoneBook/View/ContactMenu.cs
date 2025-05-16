@@ -61,7 +61,8 @@ public class ContactMenu (ContactController contactController) : AbstractMenu
                     break;
                 
                 case ContactOption.Sms:
-                    
+                    var smsMessage = AnsiConsole.Ask<string>("What message would you like to send?");
+                    _smsController.SendSmsAsync(contact, smsMessage);
                     break;
                 
                 case ContactOption.Email:

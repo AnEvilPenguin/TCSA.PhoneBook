@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using PhoneBook.Model;
 using PhoneBook.Util;
 
@@ -9,13 +10,27 @@ public class SmsController
 
     public bool CanSendSms =>
         twilioSettings != null &&
-        !string.IsNullOrWhiteSpace(twilioSettings.TwilioSid) && 
-        !string.IsNullOrWhiteSpace(twilioSettings.TwilioToken) && 
-        !string.IsNullOrWhiteSpace(twilioSettings.TwilioNumber);
+        !string.IsNullOrWhiteSpace(twilioSettings.Sid) && 
+        !string.IsNullOrWhiteSpace(twilioSettings.Token) && 
+        !string.IsNullOrWhiteSpace(twilioSettings.Number);
 
-    public Task SendSmsAsync(Contact contact)
+    public async Task SendSmsAsync(Contact contact, string message)
     {
-        // Waiting on twilio to deal with regulatory stuff before I can get a number to test with
-        throw new NotImplementedException();
+        var authString = $"{twilioSettings!.Sid}:{twilioSettings.Token}";
+        var base64AuthString = Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes(authString));
+
+        using var client = new HttpClient();
+        
+        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Basic", base64AuthString);
+
+        var content = new FormUrlEncodedContent(
+            new Dictionary<string, string>
+                {
+                    {"To", contact.PhoneNumber!.ToString()},
+                    {"From", twilioSettings!.Number!.ToString()},
+                    {"Body", message}
+                });
+        
+        await client.PostAsync(new Uri($"https://api.twilio.com/2010-04-01/Accounts/{twilioSettings!.Sid}/Messages.json"), content);
     }
 }
